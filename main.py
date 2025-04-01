@@ -17,9 +17,20 @@ def calculate_cost(b):
     else:
         return 45
 
-    
+def update():
+    weight_value = weight.value or 0
+    cost_dogs = calculate_cost(weight_value)
+    result.set_text(f'Cost: {cost_dogs}\nBreed: {breed.value or "Not Specified"}') 
+    dogs = open("cost_of_dogs.txt", "a")
+    dogs.write(str(cost_dogs)+",")
+    dogs.close()
+    # dogs = open("cost_of_dogs.txt", "r")
+    # print(dogs.read())
+
+dark = ui.dark_mode()
 with ui.row():
     weight = ui.number(label="Weight", value=0, precision=2)
+    rent_fee = ui.number(label="Rent", value=0, precision=2)
     optiondogs = ['Chihuahua', 'Shih Tzu', 'Border Collie', 'Boxer', 'Cocker Spaniel', 
                   'Great Dane', 'Maltese', 'Pomeranian', 'Yorkshire Terrier', 'Saint Bernard', 
                   'Australian Shepherd', 'Basset Hound', 'Bernese Mountain Dog', 
@@ -28,8 +39,9 @@ with ui.row():
                   'Golden Retriever', 'Bulldog', 'Poodle', 'Beagle', 'Rottweiler', 'Dachshund', 
                   'Siberian Husky', 'Doberman Pinscher', 'Samoyed']
     breed = ui.input(label='Breed', placeholder='Enter Breed', autocomplete=optiondogs)
-    button = ui.button('Calculate')
+    button_calculate = ui.button('Calculate')
     result = ui.label('Cost: 0')
+    ui.switch('Dark mode').bind_value(dark)
 
 with ui.row():
     File = pd.read_csv('FinalProject_T2/donors.csv')
@@ -37,10 +49,8 @@ with ui.row():
 
 
 
-def update():
-    weight_value = weight.value or 0
-    cost = calculate_cost(weight_value)
-    result.set_text(f'Cost: {cost}\nBreed: {breed.value or "Not Specified"}') 
-button.on_click(update)
+
+
+button_calculate.on_click(update)
 
 ui.run()
