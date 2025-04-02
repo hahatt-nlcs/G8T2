@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+
 def calculate_cost(b):
-    if  b == 0:
+    if b == 0:
         return 0
     elif b < 1.5:
         return 25
@@ -20,17 +21,21 @@ def calculate_cost(b):
 def update():
     weight_value = weight.value or 0
     cost_dogs = calculate_cost(weight_value)
-    result.set_text(f'Cost: {cost_dogs}\nBreed: {breed.value or "Not Specified"}') 
-    dogs = open("cost_of_dogs.txt", "a")
-    dogs.write(str(cost_dogs)+",")
-    dogs.close()
-    # dogs = open("cost_of_dogs.txt", "r")
-    # print(dogs.read())
+    breed_value = breed.value or "Not Specified"  
+    new_data_dog = pd.DataFrame({'Breed': [breed_value], 'Weight': [weight_value], 'Cost': [cost_dogs]})
+    new_data_dog.to_csv('dog_data.csv', mode='a', header=False, index=False)
+    updated_file_dog = pd.read_csv('dog_data.csv')
+    # sum_cost = updated_file_dog['Cost'].sum()
+    # result_sum.set_text(f'Cost: {sum_cost}') 
+    table_dog.update_from_pandas(updated_file_dog)
+    
 
-dark = ui.dark_mode()
+
+
+
 with ui.row():
     weight = ui.number(label="Weight", value=0, precision=2)
-    rent_fee = ui.number(label="Rent", value=0, precision=2)
+    # rent_fee = ui.number(label="Rent", value=0, precision=2)
     optiondogs = ['Chihuahua', 'Shih Tzu', 'Border Collie', 'Boxer', 'Cocker Spaniel', 
                   'Great Dane', 'Maltese', 'Pomeranian', 'Yorkshire Terrier', 'Saint Bernard', 
                   'Australian Shepherd', 'Basset Hound', 'Bernese Mountain Dog', 
@@ -40,17 +45,19 @@ with ui.row():
                   'Siberian Husky', 'Doberman Pinscher', 'Samoyed']
     breed = ui.input(label='Breed', placeholder='Enter Breed', autocomplete=optiondogs)
     button_calculate = ui.button('Calculate')
-    result = ui.label('Cost: 0')
-    ui.switch('Dark mode').bind_value(dark)
+    button_calculate.on_click(update)
+    result_sum = ui.label('Sum_Cost: 0')
+
 
 with ui.row():
-    File = pd.read_csv('FinalProject_T2/donors.csv')
-    table = ui.table.from_pandas(File, pagination=5)
+    try:
+        File_dog = pd.read_csv('dog_data.csv')
+        table_dog = ui.table.from_pandas(File_dog, pagination=5)
+    except FileNotFoundError:
+        File_dog = pd.DataFrame(columns=['Breed', 'Weight', 'Cost'])
+        table_dog = ui.table.from_pandas(File_dog, pagination=5)
+    File_donors = pd.read_csv('FinalProject_T2/donors.csv')
+    table_donors = ui.table.from_pandas(File_donors, pagination=5)
 
-
-
-
-
-button_calculate.on_click(update)
 
 ui.run()
