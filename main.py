@@ -18,6 +18,11 @@ def calculate_cost(b):
     else:
         return 45
 
+def delete_row():
+    df = pd.read_csv('dog_data.csv') 
+    df = df[df['s'] != 22]
+    df.to_csv('dog_data.csv', index=False)
+
 def update():
     weight_value = weight.value or 0
     cost_dogs = calculate_cost(weight_value)
@@ -53,9 +58,10 @@ with ui.row():
     try:
         File_dog = pd.read_csv('dog_data.csv')
         table_dog = ui.table.from_pandas(File_dog, pagination=5)
+        table_dog.set_selection('single')
     except FileNotFoundError:
         File_dog = pd.DataFrame(columns=['Breed', 'Weight', 'Cost'])
-        table_dog = ui.table.from_pandas(File_dog, pagination=5)
+        table_dog = ui.table.from_pandas(File_dog, pagination=5)   
     File_donors = pd.read_csv('FinalProject_T2/donors.csv')
     table_donors = ui.table.from_pandas(File_donors, pagination=5)
 
