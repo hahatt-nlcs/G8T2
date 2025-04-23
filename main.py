@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-
 def calculate_cost(b):
     if b == 0:
         return 0
@@ -18,29 +17,28 @@ def calculate_cost(b):
     else:
         return 45
 
-def delete_row():
-    df = pd.read_csv('dog_data.csv') 
-    df = df[df['s'] != 22]
-    df.to_csv('dog_data.csv', index=False)
 
 def update():
+    # weight_value = weight.value or 0
+    # cost_dogs = calculate_cost(weight_value)
+    # breed_value = breed.value or "Not Specified"  
+    # next_id = File_dog['id'].max() + 1 if not File_dog.empty else 0
+    # new_data_dog = pd.DataFrame({'Breed': [breed_value], 'Weight': [weight_value], 'Cost': [cost_dogs], 'id': [next_id]})
+    # new_data_dog.to_csv('dog_data.csv', mode='a', header=False, index=False)
+    # updated_file_dog = pd.read_csv('dog_data.csv') 
+    # table_dog.update_from_pandas(updated_file_dog)
     weight_value = weight.value or 0
     cost_dogs = calculate_cost(weight_value)
-    breed_value = breed.value or "Not Specified"  
-    new_data_dog = pd.DataFrame({'Breed': [breed_value], 'Weight': [weight_value], 'Cost': [cost_dogs]})
-    new_data_dog.to_csv('dog_data.csv', mode='a', header=False, index=False)
-    updated_file_dog = pd.read_csv('dog_data.csv')
-    # sum_cost = updated_file_dog['Cost'].sum()
-    # result_sum.set_text(f'Cost: {sum_cost}') 
-    table_dog.update_from_pandas(updated_file_dog)
-    
-
-
-
+    breed_value = breed.value or "Not Specified"
+    dog_data = pd.read_csv('dog_data.csv')
+    next_id = dog_data['id'].max() + 1 if not dog_data.empty else 0
+    new_data = pd.DataFrame({'Breed': [breed_value], 'Weight': [weight_value], 'Cost': [cost_dogs], 'id': [next_id]})
+    dog_data = pd.concat([dog_data, new_data], ignore_index=True)
+    dog_data.to_csv('dog_data.csv', index=False)
+    table_dog.update_from_pandas(dog_data)
 
 with ui.row():
     weight = ui.number(label="Weight", value=0, precision=2)
-    # rent_fee = ui.number(label="Rent", value=0, precision=2)
     optiondogs = ['Chihuahua', 'Shih Tzu', 'Border Collie', 'Boxer', 'Cocker Spaniel', 
                   'Great Dane', 'Maltese', 'Pomeranian', 'Yorkshire Terrier', 'Saint Bernard', 
                   'Australian Shepherd', 'Basset Hound', 'Bernese Mountain Dog', 
@@ -53,17 +51,18 @@ with ui.row():
     button_calculate.on_click(update)
     result_sum = ui.label('Sum_Cost: 0')
 
-
 with ui.row():
     try:
         File_dog = pd.read_csv('dog_data.csv')
         table_dog = ui.table.from_pandas(File_dog, pagination=5)
-        table_dog.set_selection('single')
+        table_dog.set_selection('multiple')
     except FileNotFoundError:
-        File_dog = pd.DataFrame(columns=['Breed', 'Weight', 'Cost'])
-        table_dog = ui.table.from_pandas(File_dog, pagination=5)   
+        File_dog = pd.DataFrame(data={'Breed': [], 'Weight': [], 'Cost': []})
+        File_dog['id'] = pd.Series([], dtype=int)
+        File_dog.to_csv('dog_data.csv', mode='a', header=True, index=False)
+        table_dog = ui.table.from_pandas(File_dog, pagination=5)
+        table_dog.set_selection('single')
     File_donors = pd.read_csv('FinalProject_T2/donors.csv')
     table_donors = ui.table.from_pandas(File_donors, pagination=5)
-
 
 ui.run()
