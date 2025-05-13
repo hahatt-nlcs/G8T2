@@ -17,7 +17,16 @@ def calculate_cost(b):
     else:
         return 45
 
+
 def update():
+    # weight_value = weight.value or 0
+    # cost_dogs = calculate_cost(weight_value)
+    # breed_value = breed.value or "Not Specified"  
+    # next_id = File_dog['id'].max() + 1 if not File_dog.empty else 0
+    # new_data_dog = pd.DataFrame({'Breed': [breed_value], 'Weight': [weight_value], 'Cost': [cost_dogs], 'id': [next_id]})
+    # new_data_dog.to_csv('dog_data.csv', mode='a', header=False, index=False)
+    # updated_file_dog = pd.read_csv('dog_data.csv') 
+    # table_dog.update_from_pandas(updated_file_dog)
     weight_value = weight.value or 0
     cost_dogs = calculate_cost(weight_value)
     breed_value = breed.value or "Not Specified"
@@ -29,12 +38,12 @@ def update():
     table_dog.update_from_pandas(dog_data)
 
 def delete_selected():
-    dog_data = pd.read_csv('dog_data.csv')
-    selection_list = list(map(int, dog_data['id'].isin(table_dog.selection))) #error here, need to be fixed "TypeError: only list-like objects are allowed to be passed to isin(), you passed a `str`"
-
-    if not table_dog.selection:
+    selected_ids = table_dog.selection
+    selection_list = list(map(str, selected_ids))
+    if not selected_ids:
         ui.notify('No selection to delete', type='warning')
         return
+    dog_data = pd.read_csv('dog_data.csv')
     dog_data = dog_data[~dog_data['id'].isin(selection_list)]
     dog_data.to_csv('dog_data.csv', index=False)
     table_dog.update_from_pandas(dog_data)
