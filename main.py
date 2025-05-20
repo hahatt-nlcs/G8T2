@@ -56,6 +56,8 @@ def main():
             return 35
         else:
             return 45
+    def doners_total():
+        return
     def update():
         weight_value = weight.value or 0
         cost_dogs = calculate_cost(weight_value)
@@ -114,7 +116,7 @@ def main():
             table_dog = ui.table.from_pandas(File_dog, pagination=5)
             table_dog.set_selection('single')
         File_donors = pd.read_csv('FinalProject_T2/donors.csv')
-        table_donors = ui.table.from_pandas(File_donors, pagination=5,title='Doners')
+        table_donors = ui.table.from_pandas(File_donors, pagination=5,title='Doners').props('table-header-class=hidden')
 
 
 
