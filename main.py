@@ -66,19 +66,22 @@ def main():
         dog_data = pd.concat([dog_data, new_data], ignore_index=True)
         dog_data.to_csv('dog_data.csv', index=False)
         table_dog.update_from_pandas(dog_data)
-    def delete_selected():
-        selected_ids = lambda x: x.selected_ids
-        print(f'Selected IDs: {selected_ids}')
-        if isinstance(selected_ids, str):
-            selected_ids = [selected_ids]
-        if not selected_ids:
+    def delete():
+        selected_rows = table_dog.selected
+        if not selected_rows:
             ui.notify('No selection to delete', type='warning')
             return
+        selected_ids = [x['id'] for x in selected_rows]
+        for i in selected_rows:
+            selected_ids += i['id']
+        print(f'Selected IDs: {selected_ids}')  
         dog_data = pd.read_csv('dog_data.csv')
         dog_data = dog_data[~dog_data['id'].isin(selected_ids)]
         dog_data.to_csv('dog_data.csv', index=False)
         table_dog.update_from_pandas(dog_data)
         ui.notify(f'Deleted {len(selected_ids)} row(s)', type='positive')
+    def append():
+        return
     def logout() -> None:
         app.storage.user.clear()
         ui.navigate.to('/login')
@@ -98,11 +101,11 @@ def main():
         button_calculate = ui.button('Calculate')
         button_calculate.on_click(update)
         button_delete = ui.button('Delete')
-        button_delete.on_click(delete_selected)
+        button_delete.on_click(delete)
     with ui.row():
         try:
             File_dog = pd.read_csv('dog_data.csv')
-            table_dog = ui.table.from_pandas(File_dog, pagination=5,on_select=lambda x: ui.notify(f'selected: {x.selection}'))
+            table_dog = ui.table.from_pandas(File_dog, pagination=5,on_select=lambda x: ui.notify(f'selected: {x.selection}'),title="Dogs")
             table_dog.set_selection('single')
         except FileNotFoundError:
             File_dog = pd.DataFrame(data={'Breed': [], 'Weight': [], 'Cost': []})
@@ -111,7 +114,7 @@ def main():
             table_dog = ui.table.from_pandas(File_dog, pagination=5)
             table_dog.set_selection('single')
         File_donors = pd.read_csv('FinalProject_T2/donors.csv')
-        table_donors = ui.table.from_pandas(File_donors, pagination=5)
+        table_donors = ui.table.from_pandas(File_donors, pagination=5,title='Doners')
 
 
 
